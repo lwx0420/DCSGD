@@ -179,6 +179,7 @@ def resample(args,optimizer,hist,lennorm,dimension):
     
     # dimension=dimension
     clip_bound=optimizer.max_grad_norm
+    print(clip_bound)
     stride=400/20
     mins=100000000000
     index=-1
@@ -189,7 +190,7 @@ def resample(args,optimizer,hist,lennorm,dimension):
         sum_norm=0
         cb=(clip_bound/10)*i
         var=(args.sigma*args.sigma*cb*cb*dimension)/(args.batchsize_train*args.batchsize_train)
-        var*=(optimizer.state_dict()['param_groups'][0]['lr'])
+        # var*=(optimizer.state_dict()['param_groups'][0]['lr'])
         
         
         bias=0
@@ -198,6 +199,8 @@ def resample(args,optimizer,hist,lennorm,dimension):
             mid+=stride*i
             if mid>cb:
                 bias+=hist[i]*(mid-cb)
+        bias*=bias        
+        bias/=lennorm
         bias/=lennorm
         
         expect=bias+var

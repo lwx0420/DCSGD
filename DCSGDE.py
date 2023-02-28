@@ -174,7 +174,7 @@ def resample(args,optimizer,hist,lennorm,dimension):
         sum_norm=0
         cb=(clip_bound/10)*i
         var=(args.sigma*args.sigma*cb*cb*dimension)/(args.batchsize_train*args.batchsize_train)
-        var*=(optimizer.state_dict()['param_groups'][0]['lr'])
+        # var*=(optimizer.state_dict()['param_groups'][0]['lr'])
         
         
         bias=0
@@ -183,7 +183,10 @@ def resample(args,optimizer,hist,lennorm,dimension):
             mid+=stride*i
             if mid>cb:
                 bias+=hist[i]*(mid-cb)
+        bias*=bias
         bias/=lennorm
+        bias/=lennorm
+        
         
         expect=bias+var
         expect=bias+var
