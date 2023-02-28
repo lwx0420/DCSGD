@@ -223,6 +223,36 @@ def resample(args,optimizer,hist,lennorm,dimension):
     optimizer.max_grad_norm=best_cb
     return optimizer
 
+
+def evaluate(model,test_dataloader,device):    
+    model.eval()
+
+    loss_arr = []
+    accuracy_arr = []
+    
+    for batch in test_dataloader:
+        batch = tuple(t.to(device) for t in batch)
+
+        with torch.no_grad():
+            inputs = {'input_ids':      batch[0],
+                      'attention_mask': batch[1],
+                      'token_type_ids': batch[2],
+                      'labels':         batch[3]}
+
+            outputs = model(**inputs)
+            loss, logits = outputs[:2]
+            
+            preds = np.argmax(logits.detach().cpu().numpy(), axis=1)
+            labels = inputs['labels'].detach().cpu().numpy()
+            
+            loss_arr.append(loss.item())
+            accuracy_arr.append(accuracy(preds, labels))
+    
+    model.train()
+    print("evaluate acc:")
+    print(np.mean(accuracy_arr))
+    return np.mean(accuracy_arr) 
+
 def test(args,model,test_loader,optimizer,privacy_engine,epoch,device):
     model.eval()
     criterion = torch.nn.CrossEntropyLoss()
@@ -337,7 +367,7 @@ def train(args, model, train_loader,resample_dataloader ,optimizer, privacy_engi
                 hist,dimension,lennorm=build_hist(args,model,resample_dataloader,optimizer,device)
                 mean_norm_rec.append(optimizer.mean_norm)
                 loss_rec.append(loss.item())
-                optimizer.resample_acc.append(acc)
+                # optimizer.resample_acc.append(acc)
                 while True:
                     mgn=optimizer.max_grad_norm
                     optimizer=resample(args,optimizer,hist,lennorm,dimension)
@@ -651,7 +681,8 @@ def main():
     for epochs in range(1,args.epochs+1):
         # if epochs==1 and args.adaptive==1: optimizer=resample(args,model,resample_dataloader,optimizer,device,resample_num=args.resample_num)  
         train(args,model,train_dataloader,resample_dataloader,optimizer,privacy_engine,epochs,device,resample_num=args.resample_num,project_gaussian=project_gaussian,project2=project2,loss_rec=loss_rec,mean_norm_rec=mean_norm_rec)
-        tmp=test(args,model,test_dataloader,optimizer,privacy_engine,epochs,device)
+        # tmp=test(args,model,test_dataloader,optimizer,privacy_engine,epochs,device)
+        tmp=evaluate(model,test_dataloader,device)
         acc.append(tmp)
     
 
