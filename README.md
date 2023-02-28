@@ -4,8 +4,10 @@ This repo contains the source code of DCSGDE and DCSGDP: two DPSGD (Differential
 
 
 ##Files
-Adaptive.py        Code for percentile method and privacy accountant.
-DCSGDE.py          DCSGDE for SVHN, CIFAR10, MNIST on Resnet18, Resnet34, linear regression.
+.
+├── Adaptive.py        Code for percentile method and privacy accountant.
+├── DCSGDE.py          DCSGDE for SVHN, CIFAR10, MNIST on Resnet18, Resnet34, linear regression.
+
 DCSGDP.py          DCSGDP for SVHN, CIFAR10, MNIST on Resnet18, Resnet34, linear regression.
 bertDCSGDE.py      DCSGDE for SNLI on BERT-base
 bertDCSGDP.py      DCSGDP for SNLI on BERT-base.
